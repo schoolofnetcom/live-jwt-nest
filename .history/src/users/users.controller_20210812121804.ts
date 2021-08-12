@@ -1,0 +1,34 @@
+import { UseGuards, Body, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Req } from '@nestjs/common';
+import { Request } from 'express';
+import { Controller } from '@nestjs/common';
+import { CreateUseDto } from './dto/create-user.dto';
+import { UsersService } from './users.service';
+import { LoginUseDto } from './dto/login-user.dto';
+import { Get } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
+@Controller('users')
+export class UsersController {
+
+    constructor(private readonly usersService: UsersService) {}
+
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    public async register(@Body() user: CreateUseDto) {
+        return this.usersService.create(user);
+    }
+
+    @Post('login')
+    @HttpCode(HttpStatus.OK)
+    public async login(@Req() req: Request, @Body() data: LoginUseDto) {
+        return this.usersService.login(req, data);
+    }
+
+    @Get('data')
+    @UseGuards(AuthGuard('jwt'))
+    @HttpCode(HttpStatus.OK)
+    public data() {
+        return 'Hello';
+    }
+}
